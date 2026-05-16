@@ -1,4 +1,4 @@
-package com.example.personalfinance.data
+package com.example.personalfinance.data.metadata
 
 enum class TransactionPartyType {
     ACCOUNT,

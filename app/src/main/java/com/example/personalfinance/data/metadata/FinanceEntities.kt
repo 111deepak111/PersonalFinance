@@ -1,4 +1,4 @@
-package com.example.personalfinance.data
+package com.example.personalfinance.data.metadata
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
