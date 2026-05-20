@@ -10,6 +10,7 @@ import com.example.personalfinance.data.metadata.Transactions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FinanceViewModel(application: Application) : AndroidViewModel(application) {
     private val database = AppDatabase.getDatabase(application, viewModelScope);
@@ -52,4 +53,45 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             accountsDao.insertAccount(newAccount)
         }
     }
+
+    fun setAccountInactive(accountId: Long, onResult: (DeactivationResult)->Unit){
+        viewModelScope.launch(Dispatchers.IO){
+            val account = accountsDao.getAccountById(accountId);
+            if (account == null) {
+                withContext(Dispatchers.Main){onResult(DeactivationResult.NOT_FOUND)}
+                return@launch;
+            }
+            if(account.balance!=0.0) {
+                withContext(Dispatchers.Main) { onResult(DeactivationResult.ERR_NON_ZERO_BALANCE) }
+                return@launch;
+            }
+            if(account.default) {
+                withContext(Dispatchers.Main) { onResult(DeactivationResult.ERR_IS_DEFAULT) }
+                return@launch;
+            }
+            val transactionHistoryCount = transactionDao.getTransactionCountForAccount(accountId);
+            if(transactionHistoryCount>0) {
+                withContext(Dispatchers.Main) { onResult(DeactivationResult.ERR_HAS_HISTORY) };
+                return@launch;
+            }
+            val rowsUpdated = accountsDao.updateToInactiveAccount(accountId);
+
+            withContext(Dispatchers.Main) {
+                if (rowsUpdated > 0) {
+                    onResult(DeactivationResult.SUCCESS)
+                } else {
+                    onResult(DeactivationResult.FAILURE)
+                }
+            }
+        }
+    }
+}
+
+enum class DeactivationResult{
+    NOT_FOUND,
+    FAILURE,
+    SUCCESS,
+    ERR_IS_DEFAULT,
+    ERR_NON_ZERO_BALANCE,
+    ERR_HAS_HISTORY
 }

@@ -17,4 +17,7 @@ interface TransactionDao {
 
     @Delete
     suspend fun deleteRawTransaction(transaction: Transactions)
+
+    @Query("SELECT COUNT(*) FROM transactions WHERE sourceId = :accountId OR destinationId = :accountId")
+    suspend fun getTransactionCountForAccount(accountId: Long): Int
 }

@@ -17,6 +17,9 @@ interface AccountsDao {
     @Query("Select * from account where id = :accountId Limit 1")
     suspend fun getAccountById(accountId :Long): Account?
 
+    @Query("Update account set isActive = 0 where id = :accountId")
+    suspend fun updateToInactiveAccount(accountId: Long) :Int
+
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAccount (account : Account): Long
 

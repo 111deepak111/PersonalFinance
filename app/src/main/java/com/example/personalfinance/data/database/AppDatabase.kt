@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Account::class, FlowCategory::class, StatusCategory::class, Transactions::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 @TypeConverters(Convertors::class)
@@ -41,6 +41,7 @@ abstract class AppDatabase: RoomDatabase() {
                     "PersonalFinanceDB"
                 )
                 .addCallback(AppDatabaseCallback(scope))
+                .fallbackToDestructiveMigration()
                 .build()
                 INSTANCE = instance
                 instance

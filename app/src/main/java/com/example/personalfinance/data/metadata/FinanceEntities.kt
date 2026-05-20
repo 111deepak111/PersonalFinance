@@ -9,7 +9,8 @@ data class Account (
     @PrimaryKey(autoGenerate = true)val id: Long = 0,
     val name: String,
     val balance: Double,
-    val default: Boolean = false
+    val default: Boolean = false,
+    val isActive: Boolean = true
 )
 
 @Entity(tableName = "FlowCategory")

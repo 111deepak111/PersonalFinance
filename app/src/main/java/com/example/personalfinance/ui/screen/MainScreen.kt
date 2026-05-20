@@ -1,4 +1,5 @@
 package com.example.personalfinance.ui.screen
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,13 +20,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.personalfinance.ui.dialog.AddAccountDialog
+import com.example.personalfinance.ui.dialog.AddTransactionDialog
 import com.example.personalfinance.ui.metadata.Screen
+import com.example.personalfinance.ui.models.FinanceViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
+    val financeViewModel: FinanceViewModel = viewModel();
     var currentScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
     var isFabExpanded by remember { mutableStateOf(false) }
+
+    var showAddAccountsDialog by remember { mutableStateOf(false)};
+    var showAddTransactionsDialog by remember { mutableStateOf(false)};
+
+    if (showAddAccountsDialog){
+        AddAccountDialog(
+            onDismiss = {showAddAccountsDialog = false},
+            viewModel = financeViewModel
+        )
+    }
+    if (showAddTransactionsDialog){
+        AddTransactionDialog(
+            onDismiss = {showAddTransactionsDialog = false},
+            viewModel = financeViewModel
+        )
+    }
     Scaffold (
         topBar = {
             TopAppBar(
@@ -74,7 +96,10 @@ fun MainScreen() {
                 ) {
                     AnimatedVisibility(visible = isFabExpanded) {
                         FloatingActionButton(
-                            onClick = { isFabExpanded = false /* Trigger Add Account Dialog */ },
+                            onClick = {
+                                isFabExpanded = false;
+                                showAddAccountsDialog = true;
+                            },
                             containerColor = MaterialTheme.colorScheme.secondaryContainer
                         ) {
                             Icon(Icons.Default.AccountCircle, contentDescription = "Add Account")
@@ -82,7 +107,10 @@ fun MainScreen() {
                     }
                     AnimatedVisibility(visible = isFabExpanded) {
                         FloatingActionButton(
-                            onClick = { isFabExpanded = false /* Trigger Add Transaction Dialog */ },
+                            onClick = {
+                                isFabExpanded = false;
+                                showAddTransactionsDialog = true;
+                            },
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer
                         ) {
                             Icon(Icons.Default.Add, contentDescription = "Add Transaction")
@@ -106,7 +134,7 @@ fun MainScreen() {
                 Screen.LIABILITIES -> PlaceholderView(title = "Liabilities Ledger")
                 Screen.INCOME -> PlaceholderView(title = "Income Statement")
                 Screen.EXPENSES -> PlaceholderView(title = "Expenses Ledger")
-                Screen.HOME -> HomeScreen()
+                Screen.HOME -> HomeScreen(financeViewModel)
             }
         }
     }

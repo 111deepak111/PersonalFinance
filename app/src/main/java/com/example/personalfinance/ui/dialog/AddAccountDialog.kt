@@ -36,6 +36,27 @@ fun AddAccountDialog (
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if(accountName.isNotBlank()){
+                        viewModel.createNewAccount(AccountFormState(
+                                accountName = accountName,
+                                initialBalance = initialBalance
+                            )
+                        );
+                        onDismiss();
+                    }
+                }
+            ) {
+                Text("Provision Account");
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel");
+            }
         }
     )
 }
