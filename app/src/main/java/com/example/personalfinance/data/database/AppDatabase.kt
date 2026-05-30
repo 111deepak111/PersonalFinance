@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 @Database(
     entities = [Account::class, FlowCategory::class, StatusCategory::class, Transactions::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(Convertors::class)
@@ -64,7 +64,8 @@ abstract class AppDatabase: RoomDatabase() {
                     Account(
                         name = "Primary Bank",
                         balance = 0.0,
-                        default = true
+                        default = true,
+                        statusCategoryId = 0L
                     )
                 )
             }

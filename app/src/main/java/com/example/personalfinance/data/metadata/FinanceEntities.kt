@@ -1,16 +1,26 @@
 package com.example.personalfinance.data.metadata
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
 
-@Entity(tableName = "Account")
+@Entity(tableName = "Account",
+    foreignKeys = [
+        ForeignKey(
+            entity = StatusCategory::class,
+            parentColumns = ["id"],
+            childColumns = ["statusCategoryId"],
+            onDelete = ForeignKey.RESTRICT
+        )
+    ])
 data class Account (
     @PrimaryKey(autoGenerate = true)val id: Long = 0,
     val name: String,
     val balance: Double,
     val default: Boolean = false,
-    val isActive: Boolean = true
+    val isActive: Boolean = true,
+    val statusCategoryId: Long
 )
 
 @Entity(tableName = "FlowCategory")

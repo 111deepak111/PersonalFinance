@@ -3,6 +3,7 @@ package com.example.personalfinance.ui.models
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.personalfinance.data.metadata.Account
 import com.example.personalfinance.data.database.AppDatabase
 import com.example.personalfinance.data.repository.LedgerRepository
@@ -48,7 +49,8 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             val newAccount = Account(
                 name = name,
                 balance = parsedBalance,
-                default = false
+                default = false,
+                statusCategoryId = 0L
             )
             accountsDao.insertAccount(newAccount)
         }
@@ -85,8 +87,16 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
             }
         }
     }
-}
 
+    fun updateAccountDetails(updatedAccount: Account){
+        viewModelScope.launch(Dispatchers.IO) {
+            if (updatedAccount.default)
+                accountsDao.clearOtherDefaults(updatedAccount.id);
+            accountsDao.updateAccount(updatedAccount);
+        }
+    }
+
+}
 enum class DeactivationResult{
     NOT_FOUND,
     FAILURE,

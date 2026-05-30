@@ -26,6 +26,8 @@ interface AccountsDao {
     @Update
     suspend fun updateAccount (account: Account)
 
+    @Query("Update account set `default` = 0 where id!=:newDefaultAccountId")
+    suspend fun clearOtherDefaults(newDefaultAccountId : Long)
     @Query("Update account set balance = balance + :amount where id = :accountId")
     suspend fun updateAccountBalance(amount :Double, accountId: Long)
 }
