@@ -4,8 +4,11 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.personalfinance.data.dao.CategoryDao
 import com.example.personalfinance.data.metadata.Account
 import com.example.personalfinance.data.database.AppDatabase
+import com.example.personalfinance.data.metadata.StatusCategory
+import com.example.personalfinance.data.metadata.TransactionPartyType
 import com.example.personalfinance.data.repository.LedgerRepository
 import com.example.personalfinance.data.metadata.Transactions
 import kotlinx.coroutines.Dispatchers
@@ -16,12 +19,13 @@ import kotlinx.coroutines.withContext
 class FinanceViewModel(application: Application) : AndroidViewModel(application) {
     private val database = AppDatabase.getDatabase(application, viewModelScope);
     private val accountsDao = database.accountsDao();
+    private val categoryDao = database.categoryDao();
     private val transactionDao = database.transactionDao();
     private val ledgerRepository = LedgerRepository(database,accountsDao, transactionDao);
 
     val allAccounts: Flow<List<Account>> = accountsDao.getAllAccounts();
     val allTransaction: Flow<List<Transactions>> = transactionDao.getAllTransactions();
-
+    val allStatusCategory: Flow<List<StatusCategory>> = categoryDao.getAllStatusCategories();
     fun addTransaction(formState: TransactionFormState) {
         val parsedAmount = formState.amount.toDoubleOrNull() ?: 0.0
         if (parsedAmount <= 0.0) return
@@ -43,6 +47,7 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
     fun createNewAccount(formState: AccountFormState) {
         val name = formState.accountName.trim()
         val parsedBalance = formState.initialBalance.toDoubleOrNull() ?: 0.0
+        val statusCategoryId = formState.statusCategoryId;
         if (name.isEmpty()) return
 
         viewModelScope.launch(Dispatchers.IO) {
@@ -50,9 +55,16 @@ class FinanceViewModel(application: Application) : AndroidViewModel(application)
                 name = name,
                 balance = parsedBalance,
                 default = false,
-                statusCategoryId = 0L
+                statusCategoryId = statusCategoryId
             )
             accountsDao.insertAccount(newAccount)
+        }
+    }
+
+    fun createStatusCategory(name : String, type: TransactionPartyType){
+        val category = StatusCategory(name = name, type = type);
+        viewModelScope.launch(Dispatchers.IO) {
+            categoryDao.insertStatusCategory(category);
         }
     }
 

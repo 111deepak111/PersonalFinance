@@ -1,15 +1,12 @@
 package com.example.personalfinance.data.dao
 
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
+import com.example.personalfinance.data.metadata.ChartSliceData
+import com.example.personalfinance.data.metadata.StatusCategory
 import com.example.personalfinance.data.metadata.TransactionPartyType
 import kotlinx.coroutines.flow.Flow
-
-data class ChartSliceData(
-    val categoryId: Long,
-    val totalAmount: Double
-)
-
 @Dao
 interface CategoryDao {
     @Query("""
@@ -40,4 +37,10 @@ interface CategoryDao {
         HAVING totalAmount > 0
     """)
     fun getCategoryBreakdownOverTime(categoryType: TransactionPartyType, startDate: Long, endDate: Long): Flow<List<ChartSliceData>>
+
+    @Insert
+    suspend fun insertStatusCategory(category: StatusCategory):Long;
+
+    @Query("SELECT * FROM StatusCategory")
+    fun getAllStatusCategories(): Flow<List<StatusCategory>>
 }

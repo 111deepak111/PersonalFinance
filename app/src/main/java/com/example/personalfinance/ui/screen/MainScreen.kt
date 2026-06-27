@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,7 +22,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.personalfinance.data.metadata.StatusCategory
 import com.example.personalfinance.ui.dialog.AddAccountDialog
+import com.example.personalfinance.ui.dialog.AddStatusCategoryDialog
 import com.example.personalfinance.ui.dialog.AddTransactionDialog
 import com.example.personalfinance.ui.metadata.Screen
 import com.example.personalfinance.ui.models.FinanceViewModel
@@ -32,14 +35,22 @@ fun MainScreen() {
     val financeViewModel: FinanceViewModel = viewModel();
     var currentScreen by remember { mutableStateOf<Screen>(Screen.HOME) }
     var isFabExpanded by remember { mutableStateOf(false) }
-
+    val availableCategories by financeViewModel.allStatusCategory.collectAsState(initial = emptyList())
     var showAddAccountsDialog by remember { mutableStateOf(false)};
     var showAddTransactionsDialog by remember { mutableStateOf(false)};
+    var showAddCategoryDialog by remember { mutableStateOf(false) };
 
+    if (showAddCategoryDialog){
+        AddStatusCategoryDialog(
+            onDismiss = {showAddCategoryDialog = false},
+            viewModel = financeViewModel
+        );
+    };
     if (showAddAccountsDialog){
         AddAccountDialog(
             onDismiss = {showAddAccountsDialog = false},
-            viewModel = financeViewModel
+            viewModel = financeViewModel,
+            availableCategories = availableCategories.toList()
         )
     }
     if (showAddTransactionsDialog){
@@ -94,6 +105,20 @@ fun MainScreen() {
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                    // Add Category
+                    AnimatedVisibility(visible = isFabExpanded) {
+                        FloatingActionButton(
+                            onClick = {
+                                isFabExpanded = false
+                                showAddCategoryDialog = true // Make sure to define this state variable at the top of your screen!
+                            },
+                            containerColor = MaterialTheme.colorScheme.primaryContainer
+                        ) {
+                            Icon(Icons.Default.Category, contentDescription = "Add Category") // Import Icons.Default.Category
+                        }
+                    }
+                    // Add Account
                     AnimatedVisibility(visible = isFabExpanded) {
                         FloatingActionButton(
                             onClick = {
@@ -105,6 +130,8 @@ fun MainScreen() {
                             Icon(Icons.Default.AccountCircle, contentDescription = "Add Account")
                         }
                     }
+
+                    // Add Transaction
                     AnimatedVisibility(visible = isFabExpanded) {
                         FloatingActionButton(
                             onClick = {

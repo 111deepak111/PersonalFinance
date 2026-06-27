@@ -5,3 +5,8 @@ enum class ChartType (val label: String) {
     INCOME_VS_EXPENSES("Income vs Expenses"),
     ACCOUNT_BALANCES("Account Balances")
 };
+
+data class ChartSliceData(
+    val categoryId: Long,
+    val totalAmount: Double
+)

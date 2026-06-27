@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 abstract class AppDatabase: RoomDatabase() {
     abstract fun accountsDao(): AccountsDao
     abstract fun transactionDao(): TransactionDao
-    abstract fun CategoryDao(): CategoryDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object{
         @Volatile

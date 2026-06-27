@@ -1,5 +1,6 @@
 package com.example.personalfinance.ui.models
 
+import com.example.personalfinance.data.metadata.StatusCategory
 import com.example.personalfinance.data.metadata.TransactionPartyType
 
 data class TransactionFormState (
@@ -13,5 +14,6 @@ data class TransactionFormState (
 
 data class AccountFormState (
     val accountName: String = "",
-    val initialBalance: String = ""
+    val initialBalance: String = "",
+    val statusCategoryId: Long = 999L
 )

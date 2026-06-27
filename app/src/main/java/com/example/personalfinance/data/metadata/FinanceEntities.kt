@@ -23,6 +23,7 @@ data class Account (
     val statusCategoryId: Long
 )
 
+//Income vs Expenses
 @Entity(tableName = "FlowCategory")
 data class FlowCategory (
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
@@ -30,6 +31,7 @@ data class FlowCategory (
     val type: TransactionPartyType
 )
 
+// Assets vs Liabilities
 @Entity(tableName = "StatusCategory")
 data class StatusCategory (
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
